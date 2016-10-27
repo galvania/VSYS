@@ -30,9 +30,9 @@ int main (int argc, char **argv)
     char file_path[BUF];
     char file_name_helper[BUF];
     char file_size[256];
-    if( argc < 2 )
+    if( argc < 3 )
     {
-        printf("Usage: %s ServerAdresse\n", argv[0]);
+        printf("Usage: %s ServerAdresse Verzeichnis\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 

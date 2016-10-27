@@ -33,6 +33,11 @@ int main (int argc, char **argv)
     char file_path[BUF];
     int commandsize;
     create_socket = socket (AF_INET, SOCK_STREAM, 0);
+if( argc < 2 )
+    {
+        printf("Usage: %s Verzeichnis\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
 
     memset(&address,0,sizeof(address));
     address.sin_family = AF_INET;
