@@ -65,6 +65,21 @@ int main (int argc, char **argv)
     {
         printf("Waiting for connections...\n");
         new_socket = accept ( create_socket, (struct sockaddr *) &cliaddress, &addrlen );
+        pid_t pid = fork();
+
+        if (pid == 0)
+        {
+            
+        }
+        else if (pid > 0)
+        {
+            continue;
+        }
+        else
+        {
+            perror("Fatal error while forking. Exiting");
+            return EXIT_FAILURE;
+        }
         if (new_socket > 0)
         {
             printf ("Client connected from %s:%d...\n", inet_ntoa (cliaddress.sin_addr),ntohs(cliaddress.sin_port));
@@ -122,7 +137,7 @@ int main (int argc, char **argv)
                     }
                 }
                 else if(strncmp(buffer, "put",3)  == 0)
-                {
+                {   
                     memset(file_name,'\0',sizeof file_name);
                     strncpy(file_name,&buffer[4],strlen(buffer)-4);
                     printf("%lu \n",strlen(file_name));
