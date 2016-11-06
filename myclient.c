@@ -20,6 +20,7 @@ bool startsWith(const char *pre, const char *str)
 }
 int main (int argc, char **argv)
 {
+
     int create_socket;
     char buffer[BUF];
     struct sockaddr_in address;
