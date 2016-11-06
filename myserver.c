@@ -44,14 +44,10 @@ if( argc < 2 )
     memset(&address,0,sizeof(address));
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    //Port wird in ein long gecastet und sollte ein ungueltiger Wert dafuer angegeben worden sein bricht das Programm ab.
-    port=strtol(argv[2],&pEnd,10);
-    if(port<1024 || port>65536){
-        perror("Invalid port. Port has to be in range of 1024-65536");
+    
+    port=castPortToLong(argv[2]);
+    if(port==-1){
         return EXIT_FAILURE;
-    }
-    if(*pEnd=='\0'){
-        perror("Not a valid port");
     }
     address.sin_port = htons (port);
 
@@ -72,6 +68,8 @@ if( argc < 2 )
         {
             printf ("Client connected from %s:%d...\n", inet_ntoa (cliaddress.sin_addr),ntohs(cliaddress.sin_port));
             strcpy(buffer,"Welcome to myserver, Please enter your command:\n");
+            commandsize=strlen(buffer);
+            send(new_socket,&commandsize,sizeof commandsize,0);
             send(new_socket, buffer, strlen(buffer),0);
         }
         do

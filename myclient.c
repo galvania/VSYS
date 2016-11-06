@@ -30,21 +30,17 @@ int main (int argc, char **argv)
     char file_path[BUF];
     char file_name_helper[BUF];
     char file_size[256];
+    long port;
     if( argc < 3 )
     {
-        printf("Usage: %s ServerAdresse Verzeichnis\n", argv[0]);
+        printf("Usage: %s Address Port\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-
-    if ((create_socket = socket (AF_INET, SOCK_STREAM, 0)) == -1)
-    {
-        perror("Socket error");
-        return EXIT_FAILURE;
-    }
+    port=castPortToLong(argv[2]);
 
     memset(&address,0,sizeof(address));
     address.sin_family = AF_INET;
-    address.sin_port = htons (PORT);
+    address.sin_port = htons (port);
     inet_aton (argv[1], &address.sin_addr);
 
     if (connect ( create_socket, (struct sockaddr *) &address, sizeof (address)) == 0)

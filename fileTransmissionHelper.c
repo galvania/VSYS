@@ -18,7 +18,46 @@ void clrBuf(char *buffer)
 {
     memset(buffer,'\0',BUF);
 }
-
+//Stringuebertragung mit vorangehender Laengenuebertragun per integer
+int sendString(char *buffer,int socket){
+    int commandsize=strlen(buffer)+1;
+    if(send(socket,&commandsize,sizeof commandsize,0)==-1){
+        perror("Error occured at sendString/Length");
+        return -1;
+    }
+    if(send(socket, buffer, commandsize,0)==-1){
+        perror("Error occured at sendString/String");
+        return -1;
+    }
+    return 0;
+}
+int recvString(char *buffer,int socket){
+    int commandsize;
+    if(recv(socket,&commandsize,sizeof commandsize,0)!=sizeof commandsize){
+        perror("Received bytes does not match with sizeof commandsize");
+        return -1;
+    }
+    if(recv(socket, buffer, commandsize, 0)!=commandsize){
+        perror("Received bytes does not match with commandsize");
+        return -1;
+    }
+    return 0;
+}
+int castPortToLong(char * portarg)
+{
+    //Port wird in ein long gecastet und sollte ein ungueltiger Wert dafuer angegeben worden sein bricht das Programm ab.
+    char * pEnd;
+    long port=strtol(portarg,&pEnd,10);
+    if(port<1024 || port>65536){
+        perror("Invalid port. Port has to be in range of 1024-65536");
+        return -1;
+    }
+    if(*pEnd!='\0'){
+        perror("Not a valid port");
+         return -1;
+    }
+    return port;
+}
 int sendFile(int socket, char *file_name)
 {
 //    char buffer[BUF];
