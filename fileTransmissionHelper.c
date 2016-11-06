@@ -100,6 +100,7 @@ int sendFile(int socket, char *file_name)
     int bytes;
     if (file_to_transfer != NULL)
     {
+        
         fseek (file_to_transfer , 0, SEEK_END);
         long bytes_to_transfer = ftell (file_to_transfer);
         rewind (file_to_transfer);
@@ -170,10 +171,6 @@ int recvFile(int socket, char *file_name, char *file_path)
         return -1;
     }
     char filename[BUF];
-    char fullPath[2*BUF];
-    char *ptr;
-    long check = 0;
-    int loopCounter = 0;
     long bytes_to_receive;
     strcat(file_path, file_name);
     printf("Sending File\n");
