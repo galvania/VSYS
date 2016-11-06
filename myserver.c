@@ -60,24 +60,26 @@ int main (int argc, char **argv)
     listen (create_socket, 5);
 
     addrlen = sizeof (struct sockaddr_in);
-
+    printf("Waiting for connections...\n");
     while (1)
     {
-        printf("Waiting for connections...\n");
+        
         new_socket = accept ( create_socket, (struct sockaddr *) &cliaddress, &addrlen );
         pid_t pid = fork();
 
         if (pid == 0)
         {
-            
+            printf("Child process created\n");
         }
         else if (pid > 0)
         {
+            printf("Child process PID:%i \n",pid);
+            close(new_socket);
             continue;
         }
         else
         {
-            perror("Fatal error while forking. Exiting");
+            perror("Fatal error while forking. Exiting\n");
             return EXIT_FAILURE;
         }
         if (new_socket > 0)
@@ -108,8 +110,8 @@ int main (int argc, char **argv)
                         while ((ent = readdir (dir)) != NULL)
                         {
                             if(ent->d_type==DT_REG){
-                            strcat(listbuffer,ent->d_name);
-                            strcat(listbuffer,"\n");
+                                strcat(listbuffer,ent->d_name);
+                                strcat(listbuffer,"\n");
                             }
                         }
                         closedir (dir);
