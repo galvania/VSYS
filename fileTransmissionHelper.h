@@ -11,4 +11,8 @@ int castPortToLong(char *port);
 int sendString(char *buffer,int socket);
 
 int recvString(char *buffer,int socket);
+
+int sendInt(int value,int socket);
+
+int recvInt(int *value,int socket);
 #endif

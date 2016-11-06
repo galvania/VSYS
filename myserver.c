@@ -101,7 +101,7 @@ int main (int argc, char **argv)
                     }
                     else
                     {
-                        perror ("Error while opening the Folder");
+                        perror ("Error while opening the Folder\n");
                         return EXIT_FAILURE;
                     }
                     sendString(listbuffer,new_socket);
@@ -116,7 +116,7 @@ int main (int argc, char **argv)
                     strcpy(file_name_helper,file_name);
                     strcpy(file_name,argv[1]);
                     strcat(file_name,file_name_helper);
-                    printf("Receiving file %s from client",file_name);
+                    printf("Receiving file %s from client\n",file_name);
                     if(sendFile(new_socket,file_name)==0){
                         printf("File %s successfully received\n",file_name);
                     }
@@ -131,7 +131,7 @@ int main (int argc, char **argv)
                     strcpy(file_path,argv[1]);
                     //printf("PUT-Filename:%s \n",file_name);
                     //printf("PUT-Filepath:%s \n",file_path);
-                    printf("Send file %s to client",file_name);
+                    printf("Sending file %s to client\n",file_name);
                     if(recvFile(new_socket,file_name,file_path)==0){
                         printf("File %s successfully sent\n",file_name);
                     }
