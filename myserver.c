@@ -35,7 +35,7 @@ int main (int argc, char **argv)
     long port;
     char * pEnd;
     create_socket = socket (AF_INET, SOCK_STREAM, 0);
-if( argc < 2 )
+    if( argc < 2 )
     {
         printf("Usage: %s Directory Port\n ", argv[0]);
         exit(EXIT_FAILURE);
@@ -49,6 +49,7 @@ if( argc < 2 )
     if(port==-1){
         return EXIT_FAILURE;
     }
+    printf("%lu",port);
     address.sin_port = htons (port);
 
     if (bind ( create_socket, (struct sockaddr *) &address, sizeof (address)) != 0)
@@ -69,8 +70,9 @@ if( argc < 2 )
             printf ("Client connected from %s:%d...\n", inet_ntoa (cliaddress.sin_addr),ntohs(cliaddress.sin_port));
             strcpy(buffer,"Welcome to myserver, Please enter your command:\n");
             commandsize=strlen(buffer);
-            send(new_socket,&commandsize,sizeof commandsize,0);
+            //send(new_socket,&commandsize,sizeof commandsize,0);
             send(new_socket, buffer, strlen(buffer),0);
+            //sendString(buffer,new_socket);
         }
         do
         {

@@ -12,7 +12,6 @@
 
 #define FILE_TO_SEND "/home/schoko/Downloads/srv/"
 #define BUF 1024
-#define PORT 6543
 
 bool startsWith(const char *pre, const char *str)
 {
@@ -46,6 +45,10 @@ int main (int argc, char **argv)
     if (connect ( create_socket, (struct sockaddr *) &address, sizeof (address)) == 0)
     {
         printf ("Connection with server (%s) established\n", inet_ntoa (address.sin_addr));
+        // size=recvString(buffer,create_socket);
+        // if(size==-1){
+        //     return EXIT_FAILURE;
+        // }
         size=recv(create_socket,buffer,BUF-1, 0);
         if (size>0)
         {
@@ -65,9 +68,10 @@ int main (int argc, char **argv)
         clrBuf(buffer);
         printf ("Send message: ");
         fgets (buffer, BUF, stdin);
-        send(create_socket, &commandsize, sizeof commandsize, 0);
+        // send(create_socket, &commandsize, sizeof commandsize, 0);
 
-        send(create_socket, buffer, strlen (buffer), 0);
+        // send(create_socket, buffer, strlen (buffer), 0);
+        sendString(buffer,create_socket);
         if((strcmp (buffer, "list\n") == 0))
         {
             clrBuf(buffer);
