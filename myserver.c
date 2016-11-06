@@ -27,11 +27,7 @@ int main (int argc, char **argv)
 
     char file_name[BUF];
     char file_name_helper[BUF];
-    char file_size[256];
-    int offset;
-    int remain_data;
     char file_path[BUF];
-    int commandsize;
     long port;
     char * pEnd;
     create_socket = socket (AF_INET, SOCK_STREAM, 0);
@@ -86,7 +82,6 @@ int main (int argc, char **argv)
         {
             printf ("Client connected from %s:%d...\n", inet_ntoa (cliaddress.sin_addr),ntohs(cliaddress.sin_port));
             strcpy(buffer,"Welcome to myserver, Please enter your command:\n");
-            commandsize=strlen(buffer);
             sendString(buffer,new_socket);
         }
         do
@@ -98,12 +93,13 @@ int main (int argc, char **argv)
             {
 //                buffer[size] = '\0';
                 printf ("Message received: %s\n", buffer);
+                //LIST
                 if (strncmp(buffer, "list",4) == 0)
                 {
                     clrBuf(listbuffer);
                     DIR *dir;
                     struct dirent *ent;
-                    //printf("DIR %s T \n",argv[1]);
+                    //Ausgabe der Dateien im Ordner
                     if ((dir = opendir (argv[1])) != NULL)
                     {
 //                        clrBuf(buffer);
@@ -123,6 +119,7 @@ int main (int argc, char **argv)
                     }
                     sendString(listbuffer,new_socket);
                 }
+                //GET
                 else if(strncmp(buffer, "get",3)  == 0)
                 {
                     memset(file_name,'\0',sizeof file_name);
@@ -138,6 +135,7 @@ int main (int argc, char **argv)
                         printf("File %s successfully received\n",file_name);
                     }
                 }
+                //PUT
                 else if(strncmp(buffer, "put",3)  == 0)
                 {   
                     memset(file_name,'\0',sizeof file_name);

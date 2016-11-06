@@ -98,7 +98,7 @@ int sendFile(int socket, char *file_name)
     }
     sendInt(code,socket);
     FILE *file_to_transfer = fopen(file_name, "r");
-//    clrBuf(buffer);
+    //    clrBuf(buffer);
     int bytes;
     if (file_to_transfer != NULL)
     {
