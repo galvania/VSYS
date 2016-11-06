@@ -44,12 +44,12 @@ int main (int argc, char **argv)
     memset(&address,0,sizeof(address));
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    
+
     port=castPortToLong(argv[2]);
-    if(port==-1){
+    if(port==-1)
+    {
         return EXIT_FAILURE;
     }
-    printf("%lu",port);
     address.sin_port = htons (port);
 
     if (bind ( create_socket, (struct sockaddr *) &address, sizeof (address)) != 0)
@@ -70,23 +70,20 @@ int main (int argc, char **argv)
             printf ("Client connected from %s:%d...\n", inet_ntoa (cliaddress.sin_addr),ntohs(cliaddress.sin_port));
             strcpy(buffer,"Welcome to myserver, Please enter your command:\n");
             commandsize=strlen(buffer);
-            //send(new_socket,&commandsize,sizeof commandsize,0);
-            //send(new_socket, buffer, strlen(buffer),0);
             sendString(buffer,new_socket);
         }
         do
         {
 
             clrBuf(buffer);
-            recv(new_socket,&commandsize,sizeof commandsize,0);
-
-            size = recv (new_socket, buffer, commandsize, 0);
+            size = recvString(buffer,new_socket);
             if( size > 0)
             {
 //                buffer[size] = '\0';
                 printf ("Message received: %s\n", buffer);
                 if (strncmp(buffer, "list",4) == 0)
                 {
+                    clrBuf(listbuffer);
                     DIR *dir;
                     struct dirent *ent;
                     printf("DIR %s T \n",argv[0]);
@@ -95,21 +92,19 @@ int main (int argc, char **argv)
 //                        clrBuf(buffer);
                         while ((ent = readdir (dir)) != NULL)
                         {
+                            if(ent->d_type==DT_REG){
                             strcat(listbuffer,ent->d_name);
                             strcat(listbuffer,"\n");
+                            }
                         }
                         closedir (dir);
                     }
                     else
                     {
-                        perror ("Fehler beim oeffnen des Ordners");
+                        perror ("Error while opening the Folder");
                         return EXIT_FAILURE;
                     }
-                    commandsize=strlen(listbuffer);
-                    send(new_socket, &commandsize, sizeof commandsize, 0);
-
-                    send(new_socket, listbuffer, commandsize, 0);
-
+                    sendString(listbuffer,new_socket);
                 }
                 else if(strncmp(buffer, "get",3)  == 0)
                 {
@@ -119,8 +114,6 @@ int main (int argc, char **argv)
 
                     file_name[strcspn(file_name, "\n")] = '\0';
                     strcpy(file_name_helper,file_name);
-//                    clrBuf(file_name);
-
                     strcpy(file_name,argv[1]);
                     strcat(file_name,file_name_helper);
                     printf("%s \n",file_name);
@@ -150,6 +143,7 @@ int main (int argc, char **argv)
                 perror("recv error");
                 return EXIT_FAILURE;
             }
+
         }
         while (strncmp (buffer, "quit", 4)  != 0);
         close (new_socket);

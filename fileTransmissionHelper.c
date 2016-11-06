@@ -41,7 +41,7 @@ int recvString(char *buffer,int socket){
         perror("Received bytes does not match with commandsize");
         return -1;
     }
-    return 0;
+    return 1;
 }
 int castPortToLong(char * portarg)
 {

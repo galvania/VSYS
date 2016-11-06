@@ -80,9 +80,13 @@ int main (int argc, char **argv)
         if((strcmp (buffer, "list\n") == 0))
         {
             clrBuf(buffer);
-            recv(create_socket,&commandsize,sizeof commandsize,0);
+            //recv(create_socket,&commandsize,sizeof commandsize,0);
 
-            size = recv (create_socket, buffer, commandsize, 0);
+            //size = recv (create_socket, buffer, commandsize, 0);
+            if(size=recvString(buffer,create_socket)==-1){
+                return EXIT_FAILURE;
+            }
+
 //            size=recv(create_socket,buffer,BUF-1, 0);
             printf ("Files: \n%s", buffer);
         }
@@ -111,6 +115,7 @@ int main (int argc, char **argv)
             printf("%s \n",file_name);
             sendFile(create_socket,file_name);
         }
+        printf("\n");
     }
     while (strncmp(buffer, "quit",4) != 0);
     close (create_socket);
