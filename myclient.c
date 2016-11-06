@@ -10,7 +10,6 @@
 #include <stdbool.h>
 #include "fileTransmissionHelper.h"
 
-#define FILE_TO_SEND "/home/schoko/Downloads/srv/"
 #define BUF 1024
 
 bool startsWith(const char *pre, const char *str)
@@ -28,7 +27,6 @@ int main (int argc, char **argv)
     char file_name[BUF];
     char file_path[BUF];
     char file_name_helper[BUF];
-    char file_size[256];
     long port;
     if( argc < 3 )
     {
@@ -69,7 +67,7 @@ int main (int argc, char **argv)
 
     do
     {
-        int commandsize=strlen(buffer);
+        
         clrBuf(buffer);
         printf ("Send message: ");
         fgets (buffer, BUF, stdin);

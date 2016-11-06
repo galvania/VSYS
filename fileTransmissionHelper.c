@@ -12,8 +12,6 @@
 #include <libgen.h>
 #include <errno.h>
 #define BUF 1024
-#define PORT 6543
-#define FILE_TO_SEND    "/home/schoko/Downloads/srv/"
 void clrBuf(char *buffer)
 {
     memset(buffer,'\0',BUF);
