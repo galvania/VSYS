@@ -71,8 +71,8 @@ int main (int argc, char **argv)
             strcpy(buffer,"Welcome to myserver, Please enter your command:\n");
             commandsize=strlen(buffer);
             //send(new_socket,&commandsize,sizeof commandsize,0);
-            send(new_socket, buffer, strlen(buffer),0);
-            //sendString(buffer,new_socket);
+            //send(new_socket, buffer, strlen(buffer),0);
+            sendString(buffer,new_socket);
         }
         do
         {

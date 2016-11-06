@@ -35,6 +35,11 @@ int main (int argc, char **argv)
         printf("Usage: %s Address Port\n", argv[0]);
         exit(EXIT_FAILURE);
     }
+    if ((create_socket = socket (AF_INET, SOCK_STREAM, 0)) == -1)
+    {
+        perror("Socket error");
+         return EXIT_FAILURE;
+    }
     port=castPortToLong(argv[2]);
 
     memset(&address,0,sizeof(address));
@@ -45,16 +50,16 @@ int main (int argc, char **argv)
     if (connect ( create_socket, (struct sockaddr *) &address, sizeof (address)) == 0)
     {
         printf ("Connection with server (%s) established\n", inet_ntoa (address.sin_addr));
-        // size=recvString(buffer,create_socket);
-        // if(size==-1){
-        //     return EXIT_FAILURE;
-        // }
-        size=recv(create_socket,buffer,BUF-1, 0);
-        if (size>0)
-        {
-            buffer[size]= '\0';
-            printf("%s",buffer);
+        size=recvString(buffer,create_socket);
+         if(size==-1){
+             return EXIT_FAILURE;
         }
+        //size=recv(create_socket,buffer,BUF-1, 0);
+        // if (size>0)
+        // {
+        //     buffer[size]= '\0';
+        //     printf("%s",buffer);
+        // }
     }
     else
     {
