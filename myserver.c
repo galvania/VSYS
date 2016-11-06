@@ -86,8 +86,8 @@ int main (int argc, char **argv)
                     clrBuf(listbuffer);
                     DIR *dir;
                     struct dirent *ent;
-                    printf("DIR %s T \n",argv[0]);
-                    if ((dir = opendir ("./")) != NULL)
+                    //printf("DIR %s T \n",argv[1]);
+                    if ((dir = opendir (argv[1])) != NULL)
                     {
 //                        clrBuf(buffer);
                         while ((ent = readdir (dir)) != NULL)
@@ -116,8 +116,10 @@ int main (int argc, char **argv)
                     strcpy(file_name_helper,file_name);
                     strcpy(file_name,argv[1]);
                     strcat(file_name,file_name_helper);
-                    printf("%s \n",file_name);
-                    sendFile(new_socket,file_name);
+                    printf("Receiving file %s from client",file_name);
+                    if(sendFile(new_socket,file_name)==0){
+                        printf("File %s successfully received\n",file_name);
+                    }
                 }
                 else if(strncmp(buffer, "put",3)  == 0)
                 {
@@ -127,9 +129,12 @@ int main (int argc, char **argv)
 
                     file_name[strcspn(file_name, "\n")] = '\0';
                     strcpy(file_path,argv[1]);
-                    printf("PUT-Filename:%s \n",file_name);
-                    printf("PUT-Filepath:%s \n",file_path);
-                    recvFile(new_socket,file_name,file_path);
+                    //printf("PUT-Filename:%s \n",file_name);
+                    //printf("PUT-Filepath:%s \n",file_path);
+                    printf("Send file %s to client",file_name);
+                    if(recvFile(new_socket,file_name,file_path)==0){
+                        printf("File %s successfully sent\n",file_name);
+                    }
                 }
 //                clrBuf(buffer);
             }

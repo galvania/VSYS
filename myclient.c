@@ -88,32 +88,37 @@ int main (int argc, char **argv)
             }
 
 //            size=recv(create_socket,buffer,BUF-1, 0);
-            printf ("Files: \n%s", buffer);
+            printf ("Files:\n------------------------------------------------------\n%s", buffer);
+            printf ("------------------------------------------------------\n");
         }
         else if (startsWith("get",buffer))
         {
             memset(file_name,'\0',sizeof file_name);
             strncpy(file_name,&buffer[4],strlen(buffer)-4);
-            printf("fnf:%s \n",file_name);
-
-            strcpy(file_path,argv[2]);
+            //printf("fnf:%s \n",file_name);
+            //printf("fn2:%s \n",file_name);
+            strcpy(file_path,"./");
             file_name[strcspn(file_name, "\n")] = '\0';
-            printf("fna:%s \n",file_path);
-            recvFile(create_socket,file_name, file_path);
+            //printf("fna:%s \n",file_path);
+            if(recvFile(create_socket,file_name, file_path)==0){
+                printf("File %s successfully received\n",file_name);
+            }
         }
         else if (startsWith("put",buffer))
         {
 
             memset(file_name,'\0',sizeof file_name);
             strncpy(file_name,&buffer[4],strlen(buffer)-4);
-            printf("%s \n",file_name);
+            //printf("%s \n",file_name);
 
             file_name[strcspn(file_name, "\n")] = '\0';
             strcpy(file_name_helper,file_name);
-            strcpy(file_name,argv[2]);
+            strcpy(file_name,"./");
             strcat(file_name,file_name_helper);
-            printf("%s \n",file_name);
-            sendFile(create_socket,file_name);
+            //printf("%s \n",file_name);
+            if(sendFile(create_socket,file_name)==0){
+                printf("File %s successfully sent\n",file_name);
+            }
         }
         printf("\n");
     }
