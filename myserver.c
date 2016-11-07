@@ -247,7 +247,7 @@ int main (int argc, char **argv)
                         continue;
                     }
                 }
-                if (strncmp(buffer, "list",4) == 0)
+                if (strncmp(buffer, "list",4) == 0 || strncmp(buffer, "LIST",4) == 0 || strncmp(buffer, "List",4) == 0)
                 {
                     clrBuf(listbuffer);
                     DIR *dir;
@@ -274,7 +274,7 @@ int main (int argc, char **argv)
                     sendString(listbuffer,new_socket);
                 }
                 //GET
-                else if(strncmp(buffer, "get",3)  == 0)
+                else if(strncmp(buffer, "get",3)  == 0 ||strncmp(buffer, "GET",3)  == 0||strncmp(buffer, "Get",3)  == 0)
                 {
                     memset(file_name,'\0',sizeof file_name);
                     strncpy(file_name,&buffer[4],strlen(buffer)-4);
@@ -290,7 +290,7 @@ int main (int argc, char **argv)
                     }
                 }
                 //PUT
-                else if(strncmp(buffer, "put",3)  == 0)
+                else if(strncmp(buffer, "put",3)  == 0 ||strncmp(buffer, "PUT",3)  == 0||strncmp(buffer, "Put",3)  == 0)
                 {
                     memset(file_name,'\0',sizeof file_name);
                     strncpy(file_name,&buffer[4],strlen(buffer)-4);
@@ -383,7 +383,7 @@ int main (int argc, char **argv)
             }
 
         }
-        while (strncmp (buffer, "quit", 4)  != 0);
+        while ((strncmp (buffer, "quit", 4)  != 0)&&(strncmp (buffer, "QUIT", 4)  != 0)&&(strncmp (buffer, "Quit", 4)  != 0));
         if (pid == 0){
             printf("Child closed\n");
             exit(3);

@@ -201,6 +201,9 @@ int recvFile(int socket, char *file_name, char *file_path)
         long bytesleft = bytes_to_receive;
         long bytesrecv = 0;
         long temp;
+        int progress_width = 20;
+        int cur_step = 0;
+        int step_size = bytes_to_receive/progress_width;
         //printf("beforeWhile: %lu\n", bytesleft);
         while (bytesleft > 0)
         {
@@ -218,7 +221,7 @@ int recvFile(int socket, char *file_name, char *file_path)
             bytesleft -= temp;
 //            sprintf(buffer, "%ld", temp);
 
-            //printf("sending:%lu\n,",temp);
+
             if (send(socket, &temp, sizeof temp, 0) == -1)
             {
                 printf("Failed to send bytes\n");
@@ -228,9 +231,11 @@ int recvFile(int socket, char *file_name, char *file_path)
             }
             //  clrBuf(buffer);
         }
+        printf("\n");
         //printf("looping done\n");
         //printf("FileBuffer:%s\n,",fileBuffer);
         fwrite (fileBuffer , 1, bytes_to_receive, file_to_transfer);
+
         free(fileBuffer);
         fclose(file_to_transfer);
 

@@ -88,12 +88,12 @@ int main (int argc, char **argv)
         // send(create_socket, buffer, strlen (buffer), 0);
         sendString(buffer,create_socket);
         if(login==1){
-        if(!startsWith("login",buffer)){
+        if(!startsWith("login",buffer)&&(strncmp (buffer, "quit", 4)  != 0)&&(strncmp (buffer, "QUIT", 4)  != 0)&&(strncmp (buffer, "Quit", 4)  != 0)){
             printf("You are not logged in\n" );
             continue;
         }
       }
-        if((strcmp (buffer, "list\n") == 0))
+        if(strcmp (buffer, "list\n") == 0 || strncmp(buffer, "LIST",4) == 0 || strncmp(buffer, "List",4) == 0)
         {
             clrBuf(buffer);
             //recv(create_socket,&commandsize,sizeof commandsize,0);
@@ -107,7 +107,7 @@ int main (int argc, char **argv)
             printf ("Files:\n------------------------------------------------------\n%s", buffer);
             printf ("------------------------------------------------------\n");
         }
-        else if (startsWith("get",buffer))
+        else if (startsWith("get",buffer)||startsWith("GET",buffer)||startsWith("Get",buffer))
         {
             memset(file_name,'\0',sizeof file_name);
             strncpy(file_name,&buffer[4],strlen(buffer)-4);
@@ -120,7 +120,7 @@ int main (int argc, char **argv)
                 printf("File %s successfully received\n",file_name);
             }
         }
-        else if (startsWith("put",buffer))
+        else if (startsWith("put",buffer)||startsWith("PUT",buffer)||startsWith("Put",buffer))
         {
 
             memset(file_name,'\0',sizeof file_name);
@@ -156,10 +156,8 @@ int main (int argc, char **argv)
 
 
             int attempts;
-            recvInt
-(&login,create_socket);
-            recvInt
-(&attempts,create_socket);
+            recvInt(&login,create_socket);
+            recvInt(&attempts,create_socket);
             if(login==1){
               printf ("Login please:");
               clrBuf(buffer);
@@ -169,8 +167,7 @@ int main (int argc, char **argv)
               char *pw = getpass("\nPassword:");
               sendString(pw,create_socket);
               int ldapvalue;
-              recvInt
-(&ldapvalue,create_socket);
+              recvInt(&ldapvalue,create_socket);
               printf("%i\n", ldapvalue);
               if (ldapvalue==0){
                   login=0;
@@ -195,7 +192,7 @@ int main (int argc, char **argv)
         }
         printf("\n");
     }
-    while (strncmp(buffer, "quit",4) != 0);
+    while ((strncmp (buffer, "quit", 4)  != 0)&&(strncmp (buffer, "QUIT", 4)  != 0)&&(strncmp (buffer, "Quit", 4)  != 0));
     close (create_socket);
     return EXIT_SUCCESS;
 }
