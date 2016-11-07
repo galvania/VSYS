@@ -20,7 +20,7 @@ bool startsWith(const char *pre, const char *str)
 }
 int main (int argc, char **argv)
 {
-
+    int login=1;
     int create_socket;
     char buffer[BUF];
     struct sockaddr_in address;
@@ -65,10 +65,21 @@ int main (int argc, char **argv)
         perror("Connect error - no server available");
         return EXIT_FAILURE;
     }
+    int banchk;
+    recvInt(&banchk,create_socket);
+        if(banchk==2){
+          printf ("Your are still banned\n");
+          return EXIT_SUCCESS;
+        }
 
     do
     {
-        
+      while(login==1){
+        if(login==1){
+          printf ("Login please:\n");
+          fgets (buffer, BUF, stdin);
+        }
+      }
         clrBuf(buffer);
         printf ("Send message: ");
         fgets (buffer, BUF, stdin);

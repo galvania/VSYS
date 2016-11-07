@@ -24,7 +24,7 @@ int main (int argc, char **argv)
     char listbuffer[BUF];
     int size;
     struct sockaddr_in address, cliaddress;
-
+    int login=1;
     char file_name[BUF];
     char file_name_helper[BUF];
     char file_path[BUF];
@@ -59,7 +59,7 @@ int main (int argc, char **argv)
     printf("Waiting for connections...\n");
     while (1)
     {
-        
+
         new_socket = accept ( create_socket, (struct sockaddr *) &cliaddress, &addrlen );
         pid_t pid = fork();
 
@@ -81,16 +81,49 @@ int main (int argc, char **argv)
         if (new_socket > 0)
         {
             printf ("Client connected from %s:%d...\n", inet_ntoa (cliaddress.sin_addr),ntohs(cliaddress.sin_port));
-            strcpy(buffer,"Welcome to myserver, Please enter your command:\n");
+            strcpy(buffer,"Welcome to myserver, Please Login:\n");
             sendString(buffer,new_socket);
         }
         do
         {
-
+            int attempts=3;
             clrBuf(buffer);
+            //if still banned
+            printf("Send ban %i\n",sendInt(2,new_socket));
+            //exit(3);
+            //else
+            sendInt(1,new_socket);
+            //sendString("Your are still banned for");
+            while(attempts>0&&login>0){
+              if(login==1){
+                char name[BUF];
+                char pass[BUF];
+                size = recvString(name,new_socket);
+                size = recvString(pass,new_socket);
+                //++Password Check
+                login==0;
+                //++onBan
+                login==2;
+                if(login==0){
+                  sendInt(login,new_socket);
+                } else if(login==2) {
+                  sendInt(login,new_socket);
+                  sendString("You are banned after 3 failed attempts to login",new_socket);
+                  exit(3);
+                }else {
+                  sendInt(login,new_socket);
+                  attempts--;
+                }
+                printf("Login successful");
+                if(login==1){
+                  continue;
+                }
+              }
+          }
             size = recvString(buffer,new_socket);
             if( size > 0)
             {
+
 //                buffer[size] = '\0';
                 printf ("Message received: %s\n", buffer);
                 //LIST
@@ -114,8 +147,9 @@ int main (int argc, char **argv)
                     }
                     else
                     {
+                        strcat(listbuffer,"Not a valid Directory\n");
                         perror ("Error while opening the Folder\n");
-                        return EXIT_FAILURE;
+                        //return EXIT_FAILURE;
                     }
                     sendString(listbuffer,new_socket);
                 }
@@ -137,7 +171,7 @@ int main (int argc, char **argv)
                 }
                 //PUT
                 else if(strncmp(buffer, "put",3)  == 0)
-                {   
+                {
                     memset(file_name,'\0',sizeof file_name);
                     strncpy(file_name,&buffer[4],strlen(buffer)-4);
                     printf("%lu \n",strlen(file_name));
@@ -156,18 +190,26 @@ int main (int argc, char **argv)
             else if (size == 0)
             {
                 printf("Client closed remote socket\n");
+                exit(3);
                 break;
             }
             else
             {
-                perror("recv error");
-                return EXIT_FAILURE;
+                printf("Client closed remote socket\n");
+                exit(3);
+                return EXIT_SUCCESS;
             }
 
         }
         while (strncmp (buffer, "quit", 4)  != 0);
+        if (pid == 0){
+            printf("Child closed\n");
+            exit(3);
+            return EXIT_SUCCESS;
+        }
         close (new_socket);
     }
     close (create_socket);
+
     return EXIT_SUCCESS;
 }

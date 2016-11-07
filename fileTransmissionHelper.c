@@ -37,7 +37,7 @@ int sendString(char *buffer,int socket){
     //Stringuebertragung mit vorangehender Laengenuebertragung per integer
     int commandsize=strlen(buffer)+1;
     if(sendInt(commandsize,socket)==-1){
-        perror("Error occured at sendString/Length\n");
+        printf("Error occured at sendString/Length\n");
         return -1;
     }
     // if(send(socket,&commandsize,sizeof commandsize,0)==-1){
@@ -45,7 +45,7 @@ int sendString(char *buffer,int socket){
     //     return -1;
     // }
     if(send(socket, buffer, commandsize,0)==-1){
-        perror("Error occured at sendString/String\n");
+        printf("Error occured at sendString/String\n");
         return -1;
     }
     return 0;
@@ -55,7 +55,7 @@ int recvString(char *buffer,int socket){
     //Gibt 1 zurueck bei Erfolg
     int commandsize;
     if(recvInt(&commandsize,socket)==-1){
-        perror("Received bytes does not match with sizeof commandsize\n");
+        printf("Received bytes does not match with sizeof commandsize\n");
         return -1;
     }
     // if(recv(socket,&commandsize,sizeof commandsize,0)!=sizeof commandsize){
@@ -63,7 +63,7 @@ int recvString(char *buffer,int socket){
     //     return -1;
     // }
     if(recv(socket, buffer, commandsize, 0)!=commandsize){
-        perror("Received bytes does not match with commandsize\n");
+        printf("Received bytes does not match with commandsize\n");
         return -1;
     }
     return 1;
@@ -100,7 +100,7 @@ int sendFile(int socket, char *file_name)
     int bytes;
     if (file_to_transfer != NULL)
     {
-        
+
         fseek (file_to_transfer , 0, SEEK_END);
         long bytes_to_transfer = ftell (file_to_transfer);
         rewind (file_to_transfer);
@@ -162,7 +162,7 @@ int sendFile(int socket, char *file_name)
 
 int recvFile(int socket, char *file_name, char *file_path)
 {
-    int fexits;   
+    int fexits;
     if(recvInt(&fexits,socket)==-1){
         return -1;
     }
