@@ -7,10 +7,10 @@ myclient.o: myclient.c
 	gcc -c myclient.c
 
 myserver: myserver.o fileTransmissionHelper.o
-	gcc myserver.o fileTransmissionHelper.o -o myserver
+	gcc -DLDAP_DEPRECATED myserver.o fileTransmissionHelper.o -o myserver -lldap -llber
 
 myserver.o: myserver.c
-	gcc -c myserver.c
+	gcc -c myserver.c 
 
 fileTransmissionHelper.o: fileTransmissionHelper.c fileTransmissionHelper.h
 	gcc -c fileTransmissionHelper.c

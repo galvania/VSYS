@@ -11,11 +11,125 @@
 #include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <ldap.h>
+
 #include "fileTransmissionHelper.h"
 #define BUF 1024
 #define PORT 6543
 #define FILE_TO_SEND    "/home/schoko/Downloads/srv/"
 
+int ldaplogin(char *user, char *pass)
+{
+  char *ldap_host = "ldap.technikum-wien.at";
+
+int ldap_port = 389;
+
+LDAP *ldap;
+
+LDAPMessage *result, *entry;
+
+int returnCode;
+
+char *search, *dn;
+
+
+
+if((ldap = ldap_init(ldap_host, ldap_port)) == NULL)
+
+{
+
+    perror("ldap_init failed");
+
+    return -1;
+
+}
+
+//printf("Connected to LDAP server %s on port %d\n", ldap_host, ldap_port);
+
+
+
+// anonymous bind
+
+returnCode = ldap_simple_bind_s(ldap, NULL, NULL);
+
+if(returnCode != LDAP_SUCCESS)
+
+{
+
+    ldap_unbind(ldap);
+
+    fprintf(stderr,"LDAP error: %s\n", ldap_err2string(returnCode));
+
+    return -1;
+
+}
+
+
+
+search = malloc(snprintf(NULL, 0, "(uid=%s)", user)+1);
+
+sprintf(search, "(uid=%s)", user);
+
+returnCode = ldap_search_s(ldap, "ou=people,dc=technikum-wien,dc=at", LDAP_SCOPE_ONELEVEL, search, NULL, 0, &result);
+
+if(returnCode != LDAP_SUCCESS)
+
+{
+
+    ldap_unbind(ldap);
+
+    fprintf(stderr,"LDAP search error: %s\n", ldap_err2string(returnCode));
+
+    return -1;
+
+}
+
+
+
+entry = ldap_first_entry(ldap, result);
+printf("search %s\n",entry);
+if(entry == NULL) {
+
+    ldap_unbind(ldap);
+
+    ldap_msgfree(result); //free memory
+
+    return 1;
+
+}
+
+dn = ldap_get_dn(ldap, entry);
+
+ldap_msgfree(result); //free memory
+
+
+
+// bind with credentials
+
+returnCode = ldap_simple_bind_s(ldap, dn, pass);
+
+if(returnCode != LDAP_SUCCESS)
+
+{
+
+    ldap_unbind(ldap);
+
+    if(returnCode == 49)
+
+        return 2;
+
+    fprintf(stderr,"LDAP error: %s\n", ldap_err2string(returnCode));
+
+    return -1;
+
+}
+
+
+
+ldap_unbind(ldap);
+
+return 0;
+}
 int main (int argc, char **argv)
 {
     int create_socket, new_socket;
@@ -24,7 +138,7 @@ int main (int argc, char **argv)
     char listbuffer[BUF];
     int size;
     struct sockaddr_in address, cliaddress;
-    int login=1;
+    int login=1; //0 is logged in
     char file_name[BUF];
     char file_name_helper[BUF];
     char file_path[BUF];
@@ -84,42 +198,43 @@ int main (int argc, char **argv)
             strcpy(buffer,"Welcome to myserver, Please Login:\n");
             sendString(buffer,new_socket);
         }
+        int attempts=3;
         do
         {
-            int attempts=3;
+
             clrBuf(buffer);
             //if still banned
-            printf("Send ban %i\n",sendInt(2,new_socket));
+            //printf("Send ban %i\n",sendInt(2,new_socket));
             //exit(3);
             //else
-            sendInt(1,new_socket);
+            //sendInt(1,new_socket);
             //sendString("Your are still banned for");
-            while(attempts>0&&login>0){
-              if(login==1){
-                char name[BUF];
-                char pass[BUF];
-                size = recvString(name,new_socket);
-                size = recvString(pass,new_socket);
-                //++Password Check
-                login==0;
-                //++onBan
-                login==2;
-                if(login==0){
-                  sendInt(login,new_socket);
-                } else if(login==2) {
-                  sendInt(login,new_socket);
-                  sendString("You are banned after 3 failed attempts to login",new_socket);
-                  exit(3);
-                }else {
-                  sendInt(login,new_socket);
-                  attempts--;
-                }
-                printf("Login successful");
-                if(login==1){
-                  continue;
-                }
-              }
-          }
+          //   while(attempts>0&&login>0){
+          //     if(login==1){
+          //       char name[BUF];
+          //       char pass[BUF];
+          //       size = recvString(name,new_socket);
+          //       size = recvString(pass,new_socket);
+          //       //++Password Check
+          //       login==0;
+          //       //++onBan
+          //       login==2;
+          //       if(login==0){
+          //         sendInt(login,new_socket);
+          //       } else if(login==2) {
+          //         sendInt(login,new_socket);
+          //         sendString("You are banned after 3 failed attempts to login",new_socket);
+          //         exit(3);
+          //       }else {
+          //         sendInt(login,new_socket);
+          //         attempts--;
+          //       }
+          //       printf("Login successful");
+          //       if(login==1){
+          //         continue;
+          //       }
+          //     }
+          // }
             size = recvString(buffer,new_socket);
             if( size > 0)
             {
@@ -127,6 +242,11 @@ int main (int argc, char **argv)
 //                buffer[size] = '\0';
                 printf ("Message received: %s\n", buffer);
                 //LIST
+                if(login==1){
+                    if(strncmp(buffer, "login",5)  != 0){
+                        continue;
+                    }
+                }
                 if (strncmp(buffer, "list",4) == 0)
                 {
                     clrBuf(listbuffer);
@@ -183,6 +303,68 @@ int main (int argc, char **argv)
                     printf("Sending file %s to client\n",file_name);
                     if(recvFile(new_socket,file_name,file_path)==0){
                         printf("File %s successfully sent\n",file_name);
+                    }
+                }
+                else if(strncmp(buffer, "login",5)  == 0)
+                {
+                    //int login=1; //0 is logged in
+                    // send_int(login,new_socket);
+                    // send_int(attempts,new_socket);
+                    // if(login==0){
+                    //   continue;
+                    // }
+                    // if(attempts==0){
+                    //   return EXIT_FAILURE;
+                    // }
+                    // char *username;
+                    // char *password;
+                    // size = recvString(buffer,new_socket);
+                    // printf("user: %s ",buffer);
+                    //recvString(password,new_socket);
+                    //printf("user: %s pass: %s",username,password);
+
+
+                    char user[BUF];
+                    char pass[BUF];
+                    printf("send_int\n" );
+                    if(send_int(login,new_socket)){
+                      perror("Failed at sending login\n");
+                    }
+                    printf("send_int\n" );
+                    if(send_int(attempts,new_socket)!=0){
+                      perror("Failed at sending attempts\n");
+                    }
+                    printf("pass\n");
+                    if(login==0){
+                        printf("Logged in \n" );
+                      continue;
+                    }
+                    if(attempts==0){
+                        printf("sendString\n" );
+                        char *banmsg ="You're banned for idk much time";
+                        sendString(banmsg,new_socket);
+                        continue;
+                    }
+                    int err;
+
+                    err=recvString(user,new_socket);
+                    printf("User:%s\nLength:%i\n", user,strlen(user));
+                    recvString(pass,new_socket);
+                    int ldapvalue;
+                    ldapvalue = ldaplogin(user,pass);
+                    printf("ldap:%i\n",ldapvalue);
+                    if(ldapvalue==0){
+                        login=0;
+                        sendInt(ldapvalue,new_socket);
+                    }else if(ldapvalue==1){
+                        sendInt(ldapvalue,new_socket);
+                        attempts--;
+                    }else if(ldapvalue==2){
+                        sendInt(ldapvalue,new_socket);
+                        attempts--;
+                    }else{
+                        sendInt(ldapvalue,new_socket);
+                        attempts--;
                     }
                 }
 //                clrBuf(buffer);

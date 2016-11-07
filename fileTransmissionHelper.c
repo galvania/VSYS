@@ -22,6 +22,7 @@ int sendInt(int value,int socket){
         perror("Error during sendInt\n");
         return -1;
     }
+    printf("send %i\n", ntohl(value));
     return 0;
 }
 int recvInt(int *value,int socket){
@@ -33,8 +34,59 @@ int recvInt(int *value,int socket){
     *value=ntohl(retvalue);
     return 0;
 }
+int send_int(int num, int fd)
+{
+    int32_t conv = htonl(num);
+    char *data = (char*)&conv;
+    int left = sizeof(conv);
+    int rc;
+    do {
+        rc = write(fd, data, left);
+        if (rc < 0) {
+            if ((errno == EAGAIN) || (errno == EWOULDBLOCK)) {
+                // use select() or epoll() to wait for the socket to be writable again
+            }
+            else if (errno != EINTR) {
+                return -1;
+            }
+        }
+        else {
+            data += rc;
+            left -= rc;
+        }
+    }
+    while (left > 0);
+    return 0;
+}
+
+int receive_int(int *num, int fd)
+{
+    int32_t ret;
+    char *data = (char*)&ret;
+    int left = sizeof(ret);
+    int rc;
+    do {
+        rc = read(fd, data, left);
+        if (ret <= 0) {
+            if ((errno == EAGAIN) || (errno == EWOULDBLOCK)) {
+                // use select() or epoll() to wait for the socket to be readable again
+            }
+            else if (errno != EINTR) {
+                return -1;
+            }
+        }
+        else {
+            data += rc;
+            left -= rc;
+        }
+    }
+    while (left > 0);
+    *num = ntohl(ret);
+    return 0;
+}
 int sendString(char *buffer,int socket){
     //Stringuebertragung mit vorangehender Laengenuebertragung per integer
+    //int commandsize=strlen(buffer)+1;
     int commandsize=strlen(buffer)+1;
     if(sendInt(commandsize,socket)==-1){
         printf("Error occured at sendString/Length\n");
@@ -44,6 +96,7 @@ int sendString(char *buffer,int socket){
     //     perror("Error occured at sendString/Length");
     //     return -1;
     // }
+    printf("commandsize %i\n",commandsize);
     if(send(socket, buffer, commandsize,0)==-1){
         printf("Error occured at sendString/String\n");
         return -1;
@@ -62,10 +115,15 @@ int recvString(char *buffer,int socket){
     //     perror("Received bytes does not match with sizeof commandsize");
     //     return -1;
     // }
-    if(recv(socket, buffer, commandsize, 0)!=commandsize){
-        printf("Received bytes does not match with commandsize\n");
+    int errsize;
+    clrBuf(buffer);
+    printf("Receiving\n");
+    if((errsize=recv(socket, buffer, commandsize, 0))!=commandsize){
+        //printf("-|%s|\n",buffer);
+        printf("Received bytes does not match with commandsize + %i %i\n",errsize,commandsize);
         return -1;
     }
+
     return 1;
 }
 

@@ -65,21 +65,21 @@ int main (int argc, char **argv)
         perror("Connect error - no server available");
         return EXIT_FAILURE;
     }
-    int banchk;
-    recvInt(&banchk,create_socket);
-        if(banchk==2){
-          printf ("Your are still banned\n");
-          return EXIT_SUCCESS;
-        }
+    // int banchk;
+    // recvInt(&banchk,create_socket);
+    //     if(banchk==2){
+    //       printf ("Your are still banned\n");
+    //       return EXIT_SUCCESS;
+    //     }
 
     do
     {
-      while(login==1){
-        if(login==1){
-          printf ("Login please:\n");
-          fgets (buffer, BUF, stdin);
-        }
-      }
+      // while(login==1){
+      //   if(login==1){
+      //     printf ("Login please:\n");
+      //     fgets (buffer, BUF, stdin);
+      //   }
+      // }
         clrBuf(buffer);
         printf ("Send message: ");
         fgets (buffer, BUF, stdin);
@@ -87,6 +87,12 @@ int main (int argc, char **argv)
 
         // send(create_socket, buffer, strlen (buffer), 0);
         sendString(buffer,create_socket);
+        if(login==1){
+        if(!startsWith("login",buffer)){
+            printf("You are not logged in\n" );
+            continue;
+        }
+      }
         if((strcmp (buffer, "list\n") == 0))
         {
             clrBuf(buffer);
@@ -128,6 +134,60 @@ int main (int argc, char **argv)
             //printf("%s \n",file_name);
             if(sendFile(create_socket,file_name)==0){
                 printf("File %s successfully sent\n",file_name);
+            }
+        }else if(startsWith("login",buffer)){
+            //login=1
+            // int attempts;
+            // receive_int(&login,create_socket);
+            // receive_int(&attempts,create_socket);
+            // if(login==0){
+            //   continue;
+            // }
+            // if(attempts==0){
+            //   return EXIT_FAILURE;
+            // }
+            // clrBuf(buffer);
+            // printf ("Username:");
+            // fgets (buffer, BUF, stdin);
+            // sendString(buffer,create_socket);
+            // clrBuf(buffer);
+            //fgets (buffer, BUF, stdin);
+            //sendString(buffer,create_socket);
+
+
+            int attempts;
+            receive_int(&login,create_socket);
+            receive_int(&attempts,create_socket);
+            if(login==1){
+              printf ("Login please:");
+              clrBuf(buffer);
+              scanf("%s", buffer);
+              //fgets (buffer, BUF, stdin);
+              sendString(buffer,create_socket);
+              char *pw = getpass("\nPassword:");
+              sendString(pw,create_socket);
+              int ldapvalue;
+              receive_int(&ldapvalue,create_socket);
+              printf("%i\n", ldapvalue);
+              if (ldapvalue==0){
+                  login=0;
+                  printf("Logged in\n");
+              }else if(ldapvalue==1){
+                  printf("User does not exist\n");
+              }else if(ldapvalue==2){
+                  printf("Passwords does not match\n");
+              }else{
+                  printf("LDAP Error\n");
+              }
+            }else if(login==0){
+                printf("Already logged in\n");
+
+            } else if(attempts==0){
+                char *banmsg;
+                recvString(banmsg,create_socket);
+                printf("%s\n",banmsg);
+            }else{
+
             }
         }
         printf("\n");
