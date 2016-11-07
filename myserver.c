@@ -308,8 +308,8 @@ int main (int argc, char **argv)
                 else if(strncmp(buffer, "login",5)  == 0)
                 {
                     //int login=1; //0 is logged in
-                    // send_int(login,new_socket);
-                    // send_int(attempts,new_socket);
+                    // sendInt(login,new_socket);
+                    // sendInt(attempts,new_socket);
                     // if(login==0){
                     //   continue;
                     // }
@@ -326,12 +326,12 @@ int main (int argc, char **argv)
 
                     char user[BUF];
                     char pass[BUF];
-                    printf("send_int\n" );
-                    if(send_int(login,new_socket)){
+                    printf("sendInt\n" );
+                    if(sendInt(login,new_socket)){
                       perror("Failed at sending login\n");
                     }
-                    printf("send_int\n" );
-                    if(send_int(attempts,new_socket)!=0){
+                    printf("sendInt\n" );
+                    if(sendInt(attempts,new_socket)!=0){
                       perror("Failed at sending attempts\n");
                     }
                     printf("pass\n");

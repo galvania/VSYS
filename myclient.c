@@ -138,8 +138,8 @@ int main (int argc, char **argv)
         }else if(startsWith("login",buffer)){
             //login=1
             // int attempts;
-            // receive_int(&login,create_socket);
-            // receive_int(&attempts,create_socket);
+            // recvInt(&login,create_socket);
+            // recvInt(&attempts,create_socket);
             // if(login==0){
             //   continue;
             // }
@@ -156,8 +156,10 @@ int main (int argc, char **argv)
 
 
             int attempts;
-            receive_int(&login,create_socket);
-            receive_int(&attempts,create_socket);
+            recvInt
+(&login,create_socket);
+            recvInt
+(&attempts,create_socket);
             if(login==1){
               printf ("Login please:");
               clrBuf(buffer);
@@ -167,7 +169,8 @@ int main (int argc, char **argv)
               char *pw = getpass("\nPassword:");
               sendString(pw,create_socket);
               int ldapvalue;
-              receive_int(&ldapvalue,create_socket);
+              recvInt
+(&ldapvalue,create_socket);
               printf("%i\n", ldapvalue);
               if (ldapvalue==0){
                   login=0;

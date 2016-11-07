@@ -34,56 +34,7 @@ int recvInt(int *value,int socket){
     *value=ntohl(retvalue);
     return 0;
 }
-int send_int(int num, int fd)
-{
-    int32_t conv = htonl(num);
-    char *data = (char*)&conv;
-    int left = sizeof(conv);
-    int rc;
-    do {
-        rc = write(fd, data, left);
-        if (rc < 0) {
-            if ((errno == EAGAIN) || (errno == EWOULDBLOCK)) {
-                // use select() or epoll() to wait for the socket to be writable again
-            }
-            else if (errno != EINTR) {
-                return -1;
-            }
-        }
-        else {
-            data += rc;
-            left -= rc;
-        }
-    }
-    while (left > 0);
-    return 0;
-}
 
-int receive_int(int *num, int fd)
-{
-    int32_t ret;
-    char *data = (char*)&ret;
-    int left = sizeof(ret);
-    int rc;
-    do {
-        rc = read(fd, data, left);
-        if (ret <= 0) {
-            if ((errno == EAGAIN) || (errno == EWOULDBLOCK)) {
-                // use select() or epoll() to wait for the socket to be readable again
-            }
-            else if (errno != EINTR) {
-                return -1;
-            }
-        }
-        else {
-            data += rc;
-            left -= rc;
-        }
-    }
-    while (left > 0);
-    *num = ntohl(ret);
-    return 0;
-}
 int sendString(char *buffer,int socket){
     //Stringuebertragung mit vorangehender Laengenuebertragung per integer
     //int commandsize=strlen(buffer)+1;
