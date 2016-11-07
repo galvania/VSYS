@@ -124,32 +124,32 @@ int sendFile(int socket, char *file_name)
 
         char * fileBuffer = (char*) malloc (sizeof(char)*bytes_to_transfer);
         fread (fileBuffer,1,bytes_to_transfer,file_to_transfer);
-
         long bytesleft = bytes_to_transfer;
         long bytessend = 0;
         long temp;
         //printf("beforeWhile: %lu\n", bytesleft);
         while (bytesleft > 0)
         {
-            //printf("sending:%s, %li\n",fileBuffer+bytessend,bytessend);
-            if (send(socket, fileBuffer+bytessend, bytesleft, 0) == -1)
-            {
-                printf("Failed to send file\n");
-                free(fileBuffer);
-                fclose(file_to_transfer);
-                return -1;
-            }
-            //printf("receiving:%lu\n,",sizeof temp);
-            if (recv(socket, &temp,sizeof temp, 0) == -1)
-            {
-                printf("Failed to recv BytesLeft\n");
-                free(fileBuffer);
-                fclose(file_to_transfer);
-                return -1;
-            }
-            //printf("receiving:%lu\n,", temp);
-            bytessend += temp;
-            bytesleft -= temp;
+
+          //printf("sending:%s, %li\n",fileBuffer+bytessend,bytessend);
+          if (send(socket, fileBuffer+bytessend, bytesleft, 0) == -1)
+          {
+              printf("Failed to send file\n");
+              free(fileBuffer);
+              fclose(file_to_transfer);
+              return -1;
+          }
+          //printf("receiving:%lu\n,",sizeof temp);
+          if (recv(socket, &temp,sizeof temp, 0) == -1)
+          {
+              printf("Failed to recv BytesLeft\n");
+              free(fileBuffer);
+              fclose(file_to_transfer);
+              return -1;
+          }
+          //printf("receiving:%lu\n,", temp);
+          bytessend += temp;
+          bytesleft -= temp;
 
 //            clrBuf(buffer);
         }
@@ -201,8 +201,8 @@ int recvFile(int socket, char *file_name, char *file_path)
         long bytesleft = bytes_to_receive;
         long bytesrecv = 0;
         long temp;
-        int progress_width = 20;
-        int cur_step = 0;
+        int progress_width = 30;
+        int step = 0;
         int step_size = bytes_to_receive/progress_width;
         //printf("beforeWhile: %lu\n", bytesleft);
         while (bytesleft > 0)
@@ -210,6 +210,7 @@ int recvFile(int socket, char *file_name, char *file_path)
             //printf("receiving:%s\nbytesleft:%li\n,",fileBuffer+bytesleft,bytesleft);
             temp = recv(socket, fileBuffer+bytesrecv, bytesleft, 0);
             //printf("received: %lu\n", temp);
+
             if (temp == -1)
             {
                 printf("Failed to recv file\n");
@@ -220,8 +221,6 @@ int recvFile(int socket, char *file_name, char *file_path)
             bytesrecv += temp;
             bytesleft -= temp;
 //            sprintf(buffer, "%ld", temp);
-
-
             if (send(socket, &temp, sizeof temp, 0) == -1)
             {
                 printf("Failed to send bytes\n");
@@ -229,7 +228,25 @@ int recvFile(int socket, char *file_name, char *file_path)
                 fclose(file_to_transfer);
                 return -1;
             }
-            //  clrBuf(buffer);
+            // Progressbar Code
+            int threshhold=bytesrecv/step_size;
+            if(threshhold==step){
+              continue;
+            }
+            if (threshhold <= progress_width)
+    					printf("]\n\033[F\033[J");
+    				printf("[");
+            for(int i = 0; i < progress_width; i++) {
+    					if (threshhold <= i)
+    						printf(" ");
+    					else
+    						printf("#");
+    				}
+            printf("]%i%%",(100*threshhold/progress_width));
+    				fflush(stdout);
+            //sleep(1); //to slow down the transfer to visualize the "animation"
+
+
         }
         printf("\n");
         //printf("looping done\n");

@@ -138,7 +138,7 @@ int main (int argc, char **argv)
     char listbuffer[BUF];
     int size;
     struct sockaddr_in address, cliaddress;
-    int login=1; //0 is logged in
+    int login=0; //0 is logged in 
     char file_name[BUF];
     char file_name_helper[BUF];
     char file_path[BUF];
