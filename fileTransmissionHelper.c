@@ -121,8 +121,8 @@ int sendFile(int socket, char *file_name)
             fclose(file_to_transfer);
             return -1;
         }
-
-        char * fileBuffer = (char*) malloc (sizeof(char)*bytes_to_transfer);
+        long fileBuffer;
+        //char * fileBuffer = (char*) malloc (sizeof(char)*bytes_to_transfer);
         fread (fileBuffer,1,bytes_to_transfer,file_to_transfer);
         long bytesleft = bytes_to_transfer;
         long bytessend = 0;
@@ -193,8 +193,8 @@ int recvFile(int socket, char *file_name, char *file_path)
         return -1;
     }
     //printf("bytes_to_receive: %lu\n", bytes_to_receive);
-    char *fileBuffer = malloc(sizeof(char)*bytes_to_receive);
-
+    //char *fileBuffer = malloc(sizeof(char)*bytes_to_receive);
+    long fileBuffer;
     FILE *file_to_transfer = fopen(file_path, "w");
     if (file_to_transfer != NULL)
     {
