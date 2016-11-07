@@ -1,5 +1,5 @@
 all: myserver myclient
-	rm ../f.h ./f.b
+
 myclient: myclient.o fileTransmissionHelper.o
 	gcc myclient.o fileTransmissionHelper.o -o myclient
 

@@ -1,0 +1,51 @@
+================
+DOKU Folk,Habres
+================
+
+Das Programm wurde in Ubuntu 16.04 entwickelt und getestet.
+
+
+============
+Installation
+============
+
+Im Verzeichnis im Terminal "make all" ausführen
+
+===================
+Starten des Servers
+===================
+
+
+  ./myserver <Verzeichnis> <Port> (zB ./myserver /home/user/Documents/Vsys 6453)
+
+Der Port muss zwischen 1024 und 65536 liegen.
+Wenn der Server initialisiert wurde, wartet er auf eine Verbindung von einem Client. Wenn ein solcher erfolgreich eine Verbindung aufgebaut hat wird ein Childprocess abgespalten der nur für diesen Client zuständig ist.
+Der Parentprocess geht wieder in den Status über, in dem er auf eine neue Anfrage eines Clients wartet.
+
+===================
+Starten des Clients
+===================
+
+In neuem Terminal ausführen:
+
+  ./myclient <Addresse> <Port> (zB ./myclient localhost 6453)
+
+Nun muss man sich mit User und Passwort einloggen.
+Die Credentials werden im LDAP geprüft und ein neuer Child-Prozess wird gestartet.
+Der Server wartet auf Anfragen eines neuen Clients.
+
+=======
+Befehle
+=======
+Alle Befehle können in lowercase, uppercase und mit dem ersten Buchstaben in uppercase und dem Rest in lowercase verwendet werden. ("list", "LIST", "List")
+
+Verfügbare Befehle: 
+	quit  -> mit diesem Befehl wird die Verbindung vom Client zum Server beendet
+	login -> zunächst muss sich der Benutzer am Client mit seinem Username und Password          	              erfolgreich einloggen. (LDAP überprüfung)
+
+Danach kann aus folgenden Befehlen ausgesucht werden: list(Dateien im Verzeichnis anzeigen)
+						      put(Eine Datei an den Server senden)
+						      get(Eine Datei vom Server laden) 
+
+
+

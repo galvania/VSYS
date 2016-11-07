@@ -47,7 +47,7 @@ int sendString(char *buffer,int socket){
     //     perror("Error occured at sendString/Length");
     //     return -1;
     // }
-    printf("commandsize %i\n",commandsize);
+    //printf("commandsize %i\n",commandsize);
     if(send(socket, buffer, commandsize,0)==-1){
         printf("Error occured at sendString/String\n");
         return -1;
@@ -68,7 +68,7 @@ int recvString(char *buffer,int socket){
     // }
     int errsize;
     clrBuf(buffer);
-    printf("Receiving\n");
+    //printf("Receiving\n");
     if((errsize=recv(socket, buffer, commandsize, 0))!=commandsize){
         //printf("-|%s|\n",buffer);
         printf("Received bytes does not match with commandsize + %i %i\n",errsize,commandsize);
@@ -182,7 +182,7 @@ int recvFile(int socket, char *file_name, char *file_path)
     char filename[BUF];
     long bytes_to_receive;
     strcat(file_path, file_name);
-    printf("Sending File\n");
+    //printf("Sending File\n");
     //printf("%s \n",file_path);
     //printf("expecting: %lu\n",sizeof bytes_to_receive);
     //send filesize

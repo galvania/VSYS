@@ -20,7 +20,7 @@ bool startsWith(const char *pre, const char *str)
 }
 int main (int argc, char **argv)
 {
-    int login=0;//0 is logged in
+    int login=1;//0 is logged in
     int create_socket;
     char buffer[BUF];
     struct sockaddr_in address;

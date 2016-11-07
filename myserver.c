@@ -138,7 +138,7 @@ int main (int argc, char **argv)
     char listbuffer[BUF];
     int size;
     struct sockaddr_in address, cliaddress;
-    int login=0; //0 is logged in 
+    int login=1; //0 is logged in
     char file_name[BUF];
     char file_name_helper[BUF];
     char file_path[BUF];
@@ -240,7 +240,7 @@ int main (int argc, char **argv)
             {
 
 //                buffer[size] = '\0';
-                printf ("Message received: %s\n", buffer);
+                //printf ("Message received: %s\n", buffer);
                 //LIST
                 if(login==1){
                     if(strncmp(buffer, "login",5)  != 0){
@@ -326,15 +326,15 @@ int main (int argc, char **argv)
 
                     char user[BUF];
                     char pass[BUF];
-                    printf("sendInt\n" );
+                    //printf("sendInt\n" );
                     if(sendInt(login,new_socket)){
                       perror("Failed at sending login\n");
                     }
-                    printf("sendInt\n" );
+                    //printf("sendInt\n" );
                     if(sendInt(attempts,new_socket)!=0){
                       perror("Failed at sending attempts\n");
                     }
-                    printf("pass\n");
+                    //printf("pass\n");
                     if(login==0){
                         printf("Logged in \n" );
                       continue;
