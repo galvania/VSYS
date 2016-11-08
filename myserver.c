@@ -17,7 +17,7 @@
 #define BUF 1024
 #define PORT 6543
 #define FILE_TO_SEND    "/home/schoko/Downloads/srv/"
-
+static char *glob_var[10000];
 int ldaplogin(char *user, char *pass)
 {
   char *ldap_host = "ldap.technikum-wien.at";
@@ -144,6 +144,9 @@ int main (int argc, char **argv)
     char file_path[BUF];
     long port;
     char * pEnd;
+    //shared banlist
+    int shmid;
+    char *shm;
     create_socket = socket (AF_INET, SOCK_STREAM, 0);
     if( argc < 2 )
     {
@@ -301,7 +304,7 @@ int main (int argc, char **argv)
                     //printf("PUT-Filename:%s \n",file_name);
                     //printf("PUT-Filepath:%s \n",file_path);
                     printf("Sending file %s to client\n",file_name);
-                    if(recvFile(new_socket,file_name,file_path)==0){
+                    if(recvFile(new_socket,file_name,file_path,0)==0){
                         printf("File %s successfully sent\n",file_name);
                     }
                 }
@@ -322,7 +325,8 @@ int main (int argc, char **argv)
                     // printf("user: %s ",buffer);
                     //recvString(password,new_socket);
                     //printf("user: %s pass: %s",username,password);
-
+                    //glob_var = mmap(NULL, sizeof *glob_var, PROT_READ | PROT_WRITE,
+                    //MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
                     char user[BUF];
                     char pass[BUF];
@@ -342,6 +346,7 @@ int main (int argc, char **argv)
                     if(attempts==0){
                         printf("sendString\n" );
                         char *banmsg ="You're banned for idk much time";
+
                         sendString(banmsg,new_socket);
                         continue;
                     }
@@ -372,13 +377,12 @@ int main (int argc, char **argv)
             else if (size == 0)
             {
                 printf("Client closed remote socket\n");
-                exit(3);
-                break;
+                return EXIT_SUCCESS;
             }
             else
             {
                 printf("Client closed remote socket\n");
-                exit(3);
+
                 return EXIT_SUCCESS;
             }
 
@@ -386,7 +390,6 @@ int main (int argc, char **argv)
         while ((strncmp (buffer, "quit", 4)  != 0)&&(strncmp (buffer, "QUIT", 4)  != 0)&&(strncmp (buffer, "Quit", 4)  != 0));
         if (pid == 0){
             printf("Child closed\n");
-            exit(3);
             return EXIT_SUCCESS;
         }
         close (new_socket);

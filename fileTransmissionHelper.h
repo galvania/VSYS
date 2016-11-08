@@ -2,7 +2,7 @@
 #define FILEHELPER_H_INCLUDED
 void clrBuf(char *buffer);
 
-int recvFile(int socket, char *file_name, char *file_path);
+int recvFile(int socket, char *file_name, char *file_path,int showprogress);
 
 int sendFile(int socket, char *file_name);
 

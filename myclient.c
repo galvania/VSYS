@@ -116,7 +116,7 @@ int main (int argc, char **argv)
             strcpy(file_path,"./");
             file_name[strcspn(file_name, "\n")] = '\0';
             //printf("fna:%s \n",file_path);
-            if(recvFile(create_socket,file_name, file_path)==0){
+            if(recvFile(create_socket,file_name, file_path,1)==0){
                 printf("File %s successfully received\n",file_name);
             }
         }

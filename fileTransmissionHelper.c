@@ -22,7 +22,7 @@ int sendInt(int value,int socket){
         perror("Error during sendInt\n");
         return -1;
     }
-    printf("send %i\n", ntohl(value));
+    //printf("send %i\n", ntohl(value));
     return 0;
 }
 int recvInt(int *value,int socket){
@@ -121,7 +121,7 @@ int sendFile(int socket, char *file_name)
             fclose(file_to_transfer);
             return -1;
         }
-        long fileBuffer;
+        long *fileBuffer = malloc (sizeof(long)*bytes_to_transfer);
         //char * fileBuffer = (char*) malloc (sizeof(char)*bytes_to_transfer);
         fread (fileBuffer,1,bytes_to_transfer,file_to_transfer);
         long bytesleft = bytes_to_transfer;
@@ -169,7 +169,7 @@ int sendFile(int socket, char *file_name)
     }
 }
 
-int recvFile(int socket, char *file_name, char *file_path)
+int recvFile(int socket, char *file_name, char *file_path,int showprogress)
 {
     int fexits;
     if(recvInt(&fexits,socket)==-1){
@@ -194,16 +194,19 @@ int recvFile(int socket, char *file_name, char *file_path)
     }
     //printf("bytes_to_receive: %lu\n", bytes_to_receive);
     //char *fileBuffer = malloc(sizeof(char)*bytes_to_receive);
-    long fileBuffer;
+    long *fileBuffer = malloc (sizeof(long)*bytes_to_receive);
     FILE *file_to_transfer = fopen(file_path, "w");
     if (file_to_transfer != NULL)
     {
         long bytesleft = bytes_to_receive;
         long bytesrecv = 0;
         long temp;
-        int progress_width = 30;
-        int step = 0;
-        int step_size = bytes_to_receive/progress_width;
+        long progress_width = 30;
+        long step = 0;
+
+        long bytes_to_show=bytes_to_receive;
+
+        long step_size = bytes_to_show/progress_width;
         //printf("beforeWhile: %lu\n", bytesleft);
         while (bytesleft > 0)
         {
@@ -229,21 +232,28 @@ int recvFile(int socket, char *file_name, char *file_path)
                 return -1;
             }
             // Progressbar Code
-            int threshhold=bytesrecv/step_size;
+            if(showprogress==1){
+
+            long threshhold=bytesrecv/step_size;
+            if(threshhold>progress_width){
+              threshhold=progress_width;
+            }
             if(threshhold==step){
               continue;
             }
             if (threshhold <= progress_width)
     					printf("]\n\033[F\033[J");
     				printf("[");
-            for(int i = 0; i < progress_width; i++) {
+            for(long i = 0; i < progress_width; i++) {
     					if (threshhold <= i)
     						printf(" ");
     					else
     						printf("#");
     				}
-            printf("]%i%%",(100*threshhold/progress_width));
+
+            printf("]%i%%",100*threshhold/progress_width);
     				fflush(stdout);
+          }
             //sleep(1); //to slow down the transfer to visualize the "animation"
 
 
